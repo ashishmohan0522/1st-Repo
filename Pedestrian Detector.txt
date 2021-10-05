@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jul 20 20:56:07 2021
+
+@author: devansh
+"""
+#importing all the necessary libraries 
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+#load HaarCascade file of full body detection 
+pedestrian= cv2.CascadeClassifier("haarcascade_fullbody.xml")
+
+#run video using cv2.videoCapture
+video=cv2.VideoCapture('walking.avi')
+
+#loop until video is finished
+while video.isOpened():
+    #taking frames of video feed    
+    ret,frames=video.read()
+    #reducing the frames for better visualization
+    frames=cv2.resize(frames,None,fx=0.5,fy=0.5,interpolation=cv2.INTER_LINEAR)
+    
+    #convert to grayscale
+    gray=cv2.cvtColor(frames,cv2.COLOR_BGR2GRAY)
+    
+    bodies=pedestrian.detectMultiScale(gray,1.2,2)
+    
+    #create a box around pedestrians
+    for (x,y,w,h) in bodies:
+        cv2.rectangle(frames, (x,y), (x+w,y+h),(0,0,0),2)
+        cv2.imshow('pedestrians',frames)
+    if cv2.waitKey(1) ==ord('q'):#use 'q' key in keyboard to exit the video 
+            break
+        
+video.release()
+cv2.destroyAllWindows()
